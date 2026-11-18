@@ -12,7 +12,7 @@ So a call on host B can be forwarded to host A. The forwarded request keeps `Ori
 
 | Path           | What it does                                                                     |
 | -------------- | -------------------------------------------------------------------------------- |
-| `/b`           | Imports `pingAction` (`app/actions.js`). Shows the action ID.                    |
+| `/b`           | Imports `pingAction` (`app/actions.js`). Shows the action ID. The second button changes the URL to `/a` with `history.replaceState` and then calls the action. This forwards the call without a manual action ID. |
 | `/a`           | Does not import the action. A call of the action here is forwarded to `/b`.      |
 | `/rewritten-a` | Proxy rewrite to `/a`. The adapter locks `initURL` for rewrites.                 |
 | `/debug`       | Returns `request.url`, the host headers and the first host this instance served. |

@@ -33,11 +33,14 @@ async function callAction(host, path, actionId) {
   try {
     result = resultLine ? JSON.parse(resultLine.slice(2)) : undefined
   } catch {}
+  // A failed forward still returns 200. The action result line then holds an error (`1:E{...}`).
+  const actionFailed = response.status >= 400 || !resultLine || resultLine.startsWith('1:E')
   return {
+    ok: !actionFailed,
     status: response.status,
     ranOnHost: result?.host,
     ranOnInstance: result?.instance?.instanceId,
-    error: response.status >= 400 ? body.slice(0, 120) : undefined,
+    error: actionFailed ? body.split('\n').slice(1).join(' ').slice(0, 80) : undefined,
   }
 }
 
@@ -65,7 +68,7 @@ for (let round = 1; round <= rounds; round++) {
 }
 console.table(rows)
 
-const failed = rows.filter((row) => row.status >= 400)
+const failed = rows.filter((row) => !row.ok)
 console.log(
   failed.length
     ? `REPRODUCED: ${failed.length}/${rows.length} calls failed (${[...new Set(failed.map((r) => r.call))].join(', ')}).`
