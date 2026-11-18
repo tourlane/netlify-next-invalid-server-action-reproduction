@@ -33,4 +33,5 @@ Use a new deploy, so that the Lambda instances are cold. The script warms host A
 
 - `main`: no changes.
 - `variant/patched-adapter`: `pnpm patch` that always calls `lockInitURL` with the current request URL.
-- `variant/trust-host-header`: `experimental.trustHostHeader: true` in `next.config.mjs`.
+
+`experimental.trustHostHeader` is not a workaround: Next.js 16.4.5 removes the key from `next.config` (the build output has `trustHostHeader: false`). Only Vercel turns it on.
