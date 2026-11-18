@@ -1,0 +1,20 @@
+{
+  "name": "netlify-next-invalid-server-action-reproduction",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.3.1",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "repro": "node scripts/repro.mjs"
+  },
+  "dependencies": {
+    "next": "16.4.5",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "5.16.3"
+  }
+}
