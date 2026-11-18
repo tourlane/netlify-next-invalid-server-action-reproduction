@@ -35,3 +35,27 @@ Use a new deploy, so that the Lambda instances are cold. The script warms host A
 - `variant/patched-adapter`: `pnpm patch` that always calls `lockInitURL` with the current request URL.
 
 `experimental.trustHostHeader` is not a workaround: Next.js 16.4.5 removes the key from `next.config` (the build output has `trustHostHeader: false`). Only Vercel turns it on.
+
+## Results (2026-11-18)
+
+Both deploys were warm. The Lambda instance had first served host A. Then 4 rounds of calls on host B:
+
+| Call on host B                           | Unpatched (`main`) | Patched (`variant/patched-adapter`) |
+| ---------------------------------------- | ------------------ | ----------------------------------- |
+| `/b` (owns the action, no forward)       | 4/4 OK             | 4/4 OK                              |
+| `/a` (forward)                           | **0/4 OK**         | 4/4 OK                              |
+| `/rewritten-a` (forward after a rewrite) | 4/4 OK             | 4/4 OK                              |
+
+Function log of a failed call (unpatched):
+
+```
+`x-forwarded-host` header with value `next-invalid-server-action-reproducti.netlify.app` does not match `origin` header with value `6afdbd60efc77d2886445027--next-invalid-server-action-reproducti.netlify.app` from a forwarded Server Actions request. Aborting the action.
+⨯ Error: Invalid Server Actions request.
+```
+
+The outer response is `200`. The action result holds the error (`1:E{"digest":"2548910437"}`), and the browser throws React error #441.
+
+`GET /debug` shows the cause without a Server Action. On an instance that first served host A, a request on host B gives:
+
+- unpatched: `request.url` has host A (the cached hostname)
+- patched: `request.url` has host B
