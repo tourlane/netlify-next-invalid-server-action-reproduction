@@ -1,0 +1,17 @@
+diff --git a/dist/run/handlers/server.js b/dist/run/handlers/server.js
+index 963e8c79b8ea45c5605191b6443a1978bda33159..2b779da2b1d50ced06bc7ad8c723d16983aa8319 100644
+--- a/dist/run/handlers/server.js
++++ b/dist/run/handlers/server.js
+@@ -3177,10 +3177,8 @@ var server_default = async (request, _context, topLevelSpan, requestContext) =>
+       }
+     });
+     disableFaultyTransferEncodingHandling(res);
+-    const publicUrl = getRewritePublicUrl(request);
+-    if (publicUrl) {
+-      lockInitURL(req, publicUrl.href);
+-    }
++    const publicUrl = getRewritePublicUrl(request) ?? new URL(request.url);
++    lockInitURL(req, publicUrl.href);
+     const resProxy = augmentNextResponse(res, requestContext);
+     const nextHandlerPromise = nextHandler(req, resProxy).catch((error) => {
+       getLogger().withError(error).error("next handler error");

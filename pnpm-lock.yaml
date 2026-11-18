@@ -105,6 +105,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@netlify/plugin-nextjs@5.16.3': 805eedf467c7f77b13b7512e4bee77c9edd0517c142576fff1bef693be4c07ad
+
 importers:
 
   .:
@@ -121,7 +124,7 @@ importers:
     devDependencies:
       '@netlify/plugin-nextjs':
         specifier: 5.16.3
-        version: 5.16.3
+        version: 5.16.3(patch_hash=805eedf467c7f77b13b7512e4bee77c9edd0517c142576fff1bef693be4c07ad)
 
 packages:
 
@@ -560,7 +563,7 @@ snapshots:
   '@img/sharp-win32-x64@0.35.5':
     optional: true
 
-  '@netlify/plugin-nextjs@5.16.3': {}
+  '@netlify/plugin-nextjs@5.16.3(patch_hash=805eedf467c7f77b13b7512e4bee77c9edd0517c142576fff1bef693be4c07ad)': {}
 
   '@next/env@16.4.5': {}
 
