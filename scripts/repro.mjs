@@ -10,6 +10,9 @@ if (!hostA || !hostB) {
   process.exit(1)
 }
 const rounds = Number(roundsArg)
+// ACTION_PAGE: the page that shows the action ID. PATHS: the paths to call the action on (comma-separated).
+const actionPage = process.env.ACTION_PAGE ?? '/b'
+const paths = (process.env.PATHS ?? '/b,/a,/rewritten-a').split(',')
 const TIMEOUT_MS = 20_000
 const baseUrl = (host) => (host.startsWith("localhost") ? `http://${host}` : `https://${host}`)
 
@@ -47,15 +50,15 @@ async function callAction(host, path, actionId) {
 const warm = await (await get(hostA, '/debug')).json()
 console.log(`Warm-up on ${hostA}/debug:`, JSON.stringify(warm, null, 2))
 
-const pageB = await (await get(hostB, '/b')).text()
+const pageB = await (await get(hostB, actionPage)).text()
 const actionId = pageB.match(/data-action-id="([^"]+)"/)?.[1]
-if (!actionId) throw new Error('Could not read the action ID from /b')
+if (!actionId) throw new Error(`Could not read the action ID from ${actionPage}`)
 console.log(`Action ID: ${actionId}\n`)
 
 const rows = []
 for (let round = 1; round <= rounds; round++) {
   await get(hostA, '/debug')
-  for (const path of ['/b', '/a', '/rewritten-a']) {
+  for (const path of paths) {
     const result = await callAction(hostB, path, actionId)
     const debugB = await (await get(hostB, '/debug')).json()
     rows.push({
