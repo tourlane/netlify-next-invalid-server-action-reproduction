@@ -5,6 +5,7 @@ import { getRequestInfo } from './lib/requestInfo'
 // For any other host (for example a deploy permalink), the proxy does not rewrite, like production.
 const MARKET_HOSTS = {
   'skew--next-invalid-server-action-reproducti.netlify.app': 'de-DE',
+  'next-invalid-server-action-reproducti.netlify.app': 'de-DE',
 }
 
 export function proxy(request) {
