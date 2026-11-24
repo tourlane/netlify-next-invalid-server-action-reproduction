@@ -120,8 +120,8 @@ importers:
         version: 19.2.4(react@19.2.4)
     devDependencies:
       '@netlify/plugin-nextjs':
-        specifier: 5.16.3
-        version: 5.16.3
+        specifier: 5.16.9
+        version: 5.16.9
 
 packages:
 
@@ -290,8 +290,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@netlify/plugin-nextjs@5.16.3':
-    resolution: {integrity: sha512-gExiEAJi+hPGmh6MjppdXQo+RdV3KUMHFUbYrL8DRbBo58HPrJCh/KyuEcIRpdiGKwdSLllmbpnr/YtSaJQSRw==}
+  '@netlify/plugin-nextjs@5.16.9':
+    resolution: {integrity: sha512-mGGT5FkuMaVHG9F3HFmhcI3cFKtzGlff5NwewEUimi2mHDGlSqpBAXWxwZxkt25nbkT1box5t+0tZ8/u5UWUww==}
     engines: {node: '>=18.0.0'}
 
   '@next/env@16.4.5':
@@ -560,7 +560,7 @@ snapshots:
   '@img/sharp-win32-x64@0.35.5':
     optional: true
 
-  '@netlify/plugin-nextjs@5.16.3': {}
+  '@netlify/plugin-nextjs@5.16.9': {}
 
   '@next/env@16.4.5': {}
 
