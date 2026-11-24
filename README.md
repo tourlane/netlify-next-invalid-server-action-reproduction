@@ -45,6 +45,17 @@ ACTION_PAGE=/loading PATHS=/loading,/static-content/peru/,/dynamic-content/peru/
   node scripts/repro.mjs locale-rewrite--<site>.netlify.app <deployId>--<site>.netlify.app 4
 ```
 
+Results (2026-11-24, 4 rounds, the Lambda instance first served host A, calls on host B):
+
+| Call on host B | `locale-rewrite` (5.16.9) | `lr-5163` (same code, 5.16.3) |
+| --- | --- | --- |
+| `/loading` (owns the action) | 4/4 OK | 4/4 OK |
+| `/static-content/peru/` (rewrite, static page, forward) | 4/4 OK | 4/4 OK |
+| `/dynamic-content/peru/` (rewrite, dynamic page, forward) | 4/4 OK | 4/4 OK |
+| `/a` (no rewrite, forward) | 4/4 OK | 4/4 OK |
+
+The forwarded calls ran on the instance that first served host A (`x-action-forwarded: 1`). The bug does not reproduce in this variant, also not on 5.16.3. On `main`, `/a` fails on 5.16.3 (0/4). The only difference for `/a` is the proxy matcher: here the proxy runs on `/a` and returns `NextResponse.next()`. So with a proxy on a path, 5.16.3 already sets `initURL` per request for that path.
+
 ## Variants
 
 - `main`: no changes.
