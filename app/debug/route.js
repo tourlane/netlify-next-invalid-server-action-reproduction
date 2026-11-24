@@ -10,5 +10,6 @@ export function GET(request) {
     xForwardedHost: request.headers.get('x-forwarded-host'),
     xForwardedProto: request.headers.get('x-forwarded-proto'),
     instance,
+    deployId: process.env.DEPLOY_ID,
   })
 }

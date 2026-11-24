@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server'
+import { getRequestInfo } from './lib/requestInfo'
 
-// Close to the production proxy: it runs on almost every path, finds the market from the host,
-// and rewrites a public content URL (with a trailing slash) to an internal locale route on the same host.
-// The deploy permalink (`<deployId>--<site>`) acts as the second market.
-function getLocale(host) {
-  return /^[0-9a-f]{24}--/.test(host ?? '') ? 'fr-FR' : 'de-DE'
+// Like the production proxy: the market comes from the host. Only the branch alias is a known market.
+// For any other host (for example a deploy permalink), the proxy does not rewrite, like production.
+const MARKET_HOSTS = {
+  'skew--next-invalid-server-action-reproducti.netlify.app': 'de-DE',
 }
 
 export function proxy(request) {
   const { pathname } = request.nextUrl
-  const locale = getLocale(request.headers.get('host'))
+  const locale = MARKET_HOSTS[request.headers.get('host') ?? '']
 
-  if (pathname === '/rewritten-a') return NextResponse.rewrite(new URL('/a', request.url))
+  if (request.method === 'POST') {
+    console.log('[repro:proxy]', JSON.stringify({ locale: locale ?? null, ...getRequestInfo(request.headers, request.url) }))
+  }
+
+  if (!locale) return NextResponse.next()
 
   const staticMatch = pathname.match(/^\/static-content\/([^/]+)\/?$/)
   if (staticMatch) {
