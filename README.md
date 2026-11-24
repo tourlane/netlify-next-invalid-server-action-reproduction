@@ -29,33 +29,6 @@ node scripts/repro.mjs <site>.netlify.app <deployId>--<site>.netlify.app 5
 
 Use a new deploy, so that the Lambda instances are cold. The script warms host A, then calls the action on host B on `/b` (control, no forward), `/a` (forward) and `/rewritten-a` (forward after a rewrite).
 
-## Variant `locale-rewrite` (@netlify/plugin-nextjs 5.16.9)
-
-5.16.9 fixes the case above. Our production site still gets the error on 5.16.9. This variant copies the production setup:
-
-- `proxy.js` runs on almost every path. It finds the market from the host and rewrites a public content URL with a trailing slash to an internal locale route on the same host (`/static-content/peru/` -> `/<locale>/content-pages/peru`).
-- `app/(static)/[locale]/content-pages/[slug]` is a static page (SSG with `revalidate`). `app/[locale]/dynamic-content/[slug]` is the same page, rendered per request. Neither page imports the action.
-- `app/(internal)/loading` is a top-level route that imports the action, like `/loading` in production.
-- `next.config.mjs` sets `skipTrailingSlashRedirect: true`, like production.
-
-Test:
-
-```sh
-ACTION_PAGE=/loading PATHS=/loading,/static-content/peru/,/dynamic-content/peru/,/a \
-  node scripts/repro.mjs locale-rewrite--<site>.netlify.app <deployId>--<site>.netlify.app 4
-```
-
-Results (2026-11-24, 4 rounds, the Lambda instance first served host A, calls on host B):
-
-| Call on host B | `locale-rewrite` (5.16.9) | `lr-5163` (same code, 5.16.3) |
-| --- | --- | --- |
-| `/loading` (owns the action) | 4/4 OK | 4/4 OK |
-| `/static-content/peru/` (rewrite, static page, forward) | 4/4 OK | 4/4 OK |
-| `/dynamic-content/peru/` (rewrite, dynamic page, forward) | 4/4 OK | 4/4 OK |
-| `/a` (no rewrite, forward) | 4/4 OK | 4/4 OK |
-
-The forwarded calls ran on the instance that first served host A (`x-action-forwarded: 1`). The bug does not reproduce in this variant, also not on 5.16.3. On `main`, `/a` fails on 5.16.3 (0/4). The only difference for `/a` is the proxy matcher: here the proxy runs on `/a` and returns `NextResponse.next()`. So with a proxy on a path, 5.16.3 already sets `initURL` per request for that path.
-
 ## Variants
 
 - `main`: no changes.

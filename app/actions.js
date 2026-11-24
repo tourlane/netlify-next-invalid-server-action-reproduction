@@ -2,7 +2,6 @@
 
 import { headers } from 'next/headers'
 import { noteInstance } from '@/lib/instance'
-import { getRequestInfo } from '@/lib/requestInfo'
 
 // Only app/b/page.js imports this file. So the action is only in the worker of /b.
 // A call to this action on /a makes Next.js forward the call to /b.
@@ -14,7 +13,6 @@ export async function pingAction() {
     origin: h.get('origin'),
     xActionForwarded: h.get('x-action-forwarded'),
     instance: noteInstance(h.get('host')),
-    request: getRequestInfo(h, null),
   }
   console.log('[repro] pingAction ran', JSON.stringify(info))
   return info
